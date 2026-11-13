@@ -35,4 +35,4 @@ jobs:
       - name: Smoke test the dashboard API
         run: |
           set -eu
-          node -e "import('./dist/server.js').then(async ({startServer})=>{const {server,url}=await startServer({port:4021,host:'127.0.0.1',version:'ci',quiet:true});const health=await fetch(url+'api/health');if(!health.ok)process.exit(1);const lint=await fetch(url+'api/lint',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({prompt:'Write something.'})});if(!lint.ok)process.exit(1);server.close();})"
+          node -e "import('./dist/server.js').then(async ({startServer})=>{const {server,url}=await startServer({port:4021,host:'127.0.0.1',version:'ci',quiet:true});const health=await fetch(url+'/api/health');if(!health.ok)process.exit(1);const lint=await fetch(url+'/api/lint',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({prompt:'Write something.'})});if(!lint.ok)process.exit(1);server.close();})"
