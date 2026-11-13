@@ -1,0 +1,1 @@
+Write a reply to this customer. They are upset about a late order and want to know what happens next. Be nice and helpful, keep it short, and mention the refund policy if it makes sense. The order is #A-1042 and it was supposed to arrive last week. Don't be too formal.

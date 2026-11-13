@@ -1,0 +1,55 @@
+{
+  "name": "noxaplus-promptlens",
+  "version": "1.0.0",
+  "description": "Lint prompts before they reach a model. Deterministic checks for structure, ambiguity, token budget, and version drift. Local, private, no model calls. Built by NoxaPlus.",
+  "keywords": [
+    "prompt-engineering",
+    "prompt-linting",
+    "llm",
+    "tokens",
+    "cli",
+    "developer-tools",
+    "prompt-versioning",
+    "noxaplus"
+  ],
+  "author": "NoxaPlus <NoxaPlus2025@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/noxaplus-star/noxaplus-promptlens",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/noxaplus-star/noxaplus-promptlens.git"
+  },
+  "bugs": {
+    "url": "https://github.com/noxaplus-star/noxaplus-promptlens/issues"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "promptlens": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "examples",
+    "docs/lens.png",
+    "docs/compare.png",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint:sample": "node dist/cli.js lint examples/support-reply.v1.md",
+    "serve": "node dist/cli.js serve",
+    "prepare": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}

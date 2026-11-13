@@ -1,0 +1,58 @@
+name: Bug report
+description: A rule fired when it should not, missed something it should catch, or the tool misbehaved.
+labels: [bug]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: PromptLens version
+      placeholder: 1.0.0
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Where did it happen?
+      options:
+        - CLI lint
+        - CLI diff
+        - Dashboard (Lint view)
+        - Dashboard (Compare view)
+        - HTTP API
+        - Programmatic import
+    validations:
+      required: true
+  - type: input
+    id: command
+    attributes:
+      label: Command or request
+      placeholder: promptlens lint prompt.md --fail-under 80
+    validations:
+      required: true
+  - type: textarea
+    id: sample
+    attributes:
+      label: Prompt that reproduces it
+      description: Paste the smallest prompt that shows the problem. Remove anything private or customer-specific.
+      render: markdown
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+      description: Which rule should fire or stay quiet, and what score did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened?
+      description: Paste the relevant part of the report and the exit code.
+    validations:
+      required: true
+  - type: input
+    id: node
+    attributes:
+      label: Node.js version
+      placeholder: 22.20.0

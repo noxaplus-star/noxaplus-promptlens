@@ -1,0 +1,38 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - name: The structured example should score 100
+        run: node dist/cli.js lint examples/support-reply.v2.md --fail-under 100 --quiet
+      - name: Smoke test JSON output
+        run: |
+          set -eu
+          node dist/cli.js lint examples/support-reply.v1.md --format json --out report.json --quiet
+          node -e "const r=require('./report.json'); if (r.tool!=='promptlens'||r.score.total!==68||r.findings.length!==6) process.exit(1)"
+      - name: Smoke test version comparison
+        run: node dist/cli.js diff examples/support-reply.v1.md examples/support-reply.v2.md --quiet
+      - name: Smoke test the dashboard API
+        run: |
+          set -eu
+          node -e "import('./dist/server.js').then(async ({startServer})=>{const {server,url}=await startServer({port:4021,host:'127.0.0.1',version:'ci',quiet:true});const health=await fetch(url+'api/health');if(!health.ok)process.exit(1);const lint=await fetch(url+'api/lint',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({prompt:'Write something.'})});if(!lint.ok)process.exit(1);server.close();})"

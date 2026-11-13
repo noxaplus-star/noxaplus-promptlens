@@ -1,0 +1,46 @@
+name: Feature request
+description: Suggest a rule, a scoring change, or a new way to use PromptLens.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+      description: Describe the prompt or workflow that PromptLens does not handle well today. Real examples beat abstractions.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - New wording rule
+        - Structure detection
+        - Scoring
+        - Diff and version comparison
+        - CLI
+        - Dashboard or API
+        - Documentation
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would you like it to do?
+      description: If this is a rule, include a phrase that should match and a nearby good phrase that should not.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Existing flags, rules, or external tools you tried.
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Project constraints
+      options:
+        - label: This can work without network access or a model call.
+          required: true
+        - label: This can produce the same result on every run.
+          required: true
