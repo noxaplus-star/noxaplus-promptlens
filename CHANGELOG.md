@@ -2,6 +2,14 @@
 
 All notable changes to NoxaPlus PromptLens are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] - 2026-11-14
+
+### Fixed
+
+- Restore neutral findings and structure indicators when the prompt is cleared or contains only whitespace.
+- Cancel pending lint work and ignore delayed responses after Clear, including stale errors and loading indicators.
+- Add six dashboard regressions covering Clear, manual deletion, delayed responses, and subsequent sample/comparison usage.
+
 ## [1.0.0] - 2026-11-13
 
 First public release.
@@ -19,4 +27,5 @@ First public release.
 - Bundled before/after example prompts.
 - Zero runtime dependencies; requires Node.js 22 or newer.
 
+[1.0.1]: https://github.com/noxaplus-star/noxaplus-promptlens/releases/tag/v1.0.1
 [1.0.0]: https://github.com/noxaplus-star/noxaplus-promptlens/releases/tag/v1.0.0
