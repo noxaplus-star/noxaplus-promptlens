@@ -1,6 +1,6 @@
 {
   "name": "noxaplus-promptlens",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Lint prompts before they reach a model. Deterministic checks for structure, ambiguity, token budget, and version drift. Local, private, no model calls. Built by NoxaPlus.",
   "keywords": [
     "prompt-engineering",
