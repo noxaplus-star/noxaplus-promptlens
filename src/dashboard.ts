@@ -386,6 +386,9 @@ export function renderDashboard(version: string): string {
 
   function $(id) { return document.getElementById(id); }
 
+  var emptyStructure = $('structure-grid').innerHTML;
+  var emptyFindings = $('findings-list').innerHTML;
+
   function esc(value) {
     return String(value).replace(/[&<>"']/g, function (character) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character];
@@ -500,14 +503,19 @@ export function renderDashboard(version: string): string {
     $('stat-sentences').textContent = '0';
     $('context-chips').innerHTML = '';
     $('structure-hint').textContent = '0 of 7 sections';
+    $('structure-grid').innerHTML = emptyStructure;
     $('findings-hint').textContent = 'Nothing analyzed yet';
+    $('findings-list').innerHTML = emptyFindings;
+    $('score-panel').classList.remove('loading');
   }
 
   function lintNow() {
+    clearTimeout(state.timer);
+    state.timer = null;
+    if (state.controller) state.controller.abort();
     var text = $('prompt').value;
     syncEditor();
     if (!text.trim()) { renderEmptyReport(); return; }
-    if (state.controller) state.controller.abort();
     var controller = new AbortController();
     state.controller = controller;
     $('score-panel').classList.add('loading');
@@ -525,7 +533,7 @@ export function renderDashboard(version: string): string {
       if (controller.signal.aborted) return;
       renderReport(report);
     }).catch(function (error) {
-      if (error.name !== 'AbortError') {
+      if (!controller.signal.aborted && error.name !== 'AbortError') {
         $('findings-list').innerHTML = '<div class="success-card" style="border-color:#4a2b31;background:#1a0d11;color:#ffb4bf;">' + esc(error.message) + '</div>';
       }
     }).finally(function () {
