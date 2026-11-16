@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/brand.png" alt="NoxaPlus" width="520"></p>
+
 # NoxaPlus PromptLens
 
 **Your prompt is not bad. It is just missing the parts the model needed.**
@@ -50,14 +52,14 @@ node dist/cli.js lint examples/support-reply.v1.md
 Install the release package globally if you want the `promptlens` command anywhere:
 
 ```bash
-npm install -g https://github.com/noxaplus-star/noxaplus-promptlens/releases/download/v1.1.0/noxaplus-promptlens-1.1.0.tgz
+npm install -g https://github.com/noxaplus-star/noxaplus-promptlens/releases/download/v1.1.1/noxaplus-promptlens-1.1.1.tgz
 promptlens lint prompt.md
 ```
 
 A vague prompt gets a very direct answer:
 
 ```text
-NoxaPlus PromptLens 1.1.0
+NoxaPlus PromptLens 1.1.1
 52 words · 73 est. tokens · 2 lines · 5 sentences
 
 Score 68 / 100  (D)

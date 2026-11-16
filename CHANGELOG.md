@@ -2,6 +2,18 @@
 
 All notable changes to NoxaPlus PromptLens are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-11-16
+
+Brand and headline update.
+
+### Changed
+
+- The hero headline stays on one line on desktop windows instead of wrapping
+  mid-sentence; phones still wrap naturally.
+- The original NoxaPlus logo replaces the magnifier mark in the header and
+  favicon, with a light variant for the dark theme.
+- README and documentation point at the 1.1.1 package.
+
 ## [1.1.0] - 2026-11-16
 
 ### Added
@@ -19,6 +31,7 @@ All notable changes to NoxaPlus PromptLens are documented here. The format follo
 
 - The README now leads with a no-install playground link, documents the page, and separates the hosted playground from the local dashboard and HTTP API.
 
+[1.1.1]: https://github.com/noxaplus-star/noxaplus-promptlens/releases/tag/v1.1.1
 [1.1.0]: https://github.com/noxaplus-star/noxaplus-promptlens/releases/tag/v1.1.0
 
 ## [1.0.1] - 2026-11-14
