@@ -23,6 +23,10 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+      - name: Rebuild the browser playground
+        run: npm run build:web
+      - name: Browser playground output is up to date
+        run: git diff --exit-code -- web/engine
       - name: The structured example should score 100
         run: node dist/cli.js lint examples/support-reply.v2.md --fail-under 100 --quiet
       - name: Smoke test JSON output

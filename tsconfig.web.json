@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "web/engine",
+    "rootDir": "src",
+    "types": [],
+    "declaration": false,
+    "sourceMap": false
+  },
+  "include": ["src/web.ts"]
+}

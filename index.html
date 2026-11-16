@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PromptLens — lint prompts before they reach a model</title>
+<meta name="description" content="Score a prompt for structure, ambiguity, and token weight. 22 deterministic rules, no model calls, no uploads. Everything runs in your browser." />
+<meta name="color-scheme" content="dark light" />
+<meta id="themeColorMeta" name="theme-color" content="#080b10" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23b6f36a'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%23080b10' stroke-width='3'/%3E%3Cpath d='M16 9v14M9 16h14' stroke='%23080b10' stroke-width='1.6' opacity='.5'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="./web/style.css" />
+<script>
+  (function () {
+    var theme = null;
+    try {
+      var stored = JSON.parse(localStorage.getItem("noxaplus-promptlens:web") || "null");
+      if (stored && (stored.theme === "light" || stored.theme === "dark")) theme = stored.theme;
+    } catch (error) {}
+    if (!theme) {
+      theme = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+    }
+    document.documentElement.dataset.theme = theme;
+    var meta = document.getElementById("themeColorMeta");
+    if (meta) meta.setAttribute("content", theme === "dark" ? "#080b10" : "#f4f5ef");
+  })();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <a class="brand" href="./" aria-label="PromptLens home">
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 32 32" width="26" height="26"><circle cx="14" cy="14" r="8" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M20 20l6 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M14 10v8M10 14h8" stroke="currentColor" stroke-width="1.4" opacity=".45"/></svg>
+    </span>
+    <span class="brand-text">
+      <strong>PromptLens</strong>
+      <small>by NoxaPlus</small>
+    </span>
+  </a>
+  <div class="header-actions">
+    <span class="local-pill" title="The page makes no network requests after it loads.">
+      <span class="pulse" aria-hidden="true"></span>
+      Runs locally
+    </span>
+    <a class="ghost-button" href="https://github.com/noxaplus-star/noxaplus-promptlens" target="_blank" rel="noopener">
+      <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.67 0 8.19c0 3.62 2.29 6.69 5.47 7.77.4.08.55-.18.55-.39l-.01-1.36c-2.22.49-2.69-1.09-2.69-1.09-.36-.94-.89-1.19-.89-1.19-.73-.51.06-.5.06-.5.8.06 1.23.84 1.23.84.72 1.26 1.88.9 2.34.69.07-.53.28-.9.51-1.1-1.78-.21-3.64-.91-3.64-4.04 0-.89.31-1.62.82-2.19-.08-.21-.36-1.04.08-2.16 0 0 .67-.22 2.2.84A7.4 7.4 0 0 1 8 3.96c.68 0 1.36.09 2 .28 1.53-1.06 2.2-.84 2.2-.84.44 1.12.16 1.95.08 2.16.51.57.82 1.3.82 2.19 0 3.14-1.86 3.83-3.65 4.03.29.25.54.75.54 1.51l-.01 2.23c0 .22.15.48.55.39A8.2 8.2 0 0 0 16 8.19C16 3.67 12.42 0 8 0Z"/></svg>
+      <span class="ghost-label">GitHub</span>
+    </a>
+    <button id="themeToggle" class="icon-button" type="button" aria-label="Switch to light theme" aria-pressed="false">
+      <svg class="icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2.2M12 19.3v2.2M4.2 12H2M22 12h-2.2M5.6 5.6l1.6 1.6M16.8 16.8l1.6 1.6M18.4 5.6l-1.6 1.6M7.2 16.8l-1.6 1.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<main id="main" class="shell">
+  <section class="hero" aria-labelledby="heroTitle">
+    <div class="hero-copy">
+      <p class="eyebrow">Deterministic prompt linting</p>
+      <h1 id="heroTitle">Catch the gaps before the model does.</h1>
+      <p class="lede">
+        PromptLens reads a prompt like a picky reviewer: who is speaking, what done looks like,
+        what to avoid, and how the answer should be shaped. Score it, see the line that cost you
+        points, and fix it before you spend a request.
+      </p>
+    </div>
+    <dl class="hero-facts">
+      <div><dt>Rules</dt><dd>22</dd><span>15 wording · 7 structure</span></div>
+      <div><dt>Uploads</dt><dd>None</dd><span>no model calls</span></div>
+      <div><dt>Results</dt><dd>Instant</dd><span>same text, same score</span></div>
+    </dl>
+  </section>
+
+  <section class="app" aria-label="PromptLens workspace">
+    <div class="app-bar">
+      <div class="view-tabs" role="tablist" aria-label="Workspace views">
+        <button id="tab-lint" class="view-tab is-active" role="tab" aria-selected="true" aria-controls="view-lint" data-view="lint" type="button">Lint</button>
+        <button id="tab-compare" class="view-tab" role="tab" aria-selected="false" aria-controls="view-compare" data-view="compare" type="button">Compare</button>
+        <button id="tab-rules" class="view-tab" role="tab" aria-selected="false" aria-controls="view-rules" data-view="rules" type="button">Rules <span class="tab-count">22</span></button>
+      </div>
+      <div class="app-meta">
+        <span id="draftStatus" class="draft-status" role="status">Draft stays in this browser</span>
+        <span class="version-pill">v<span id="versionLabel">1.1.0</span></span>
+      </div>
+    </div>
+
+    <section id="view-lint" class="view" role="tabpanel" aria-labelledby="tab-lint">
+      <div class="workspace">
+        <article class="panel editor-panel">
+          <header class="panel-head">
+            <div>
+              <h2>Your prompt</h2>
+              <p>Paste what you are about to send. Nothing leaves this page.</p>
+            </div>
+            <div class="panel-actions">
+              <button id="sampleVague" class="subtle-button" type="button">Vague example</button>
+              <button id="sampleStructured" class="subtle-button" type="button">Structured</button>
+              <button id="clearPrompt" class="subtle-button" type="button">Clear</button>
+            </div>
+          </header>
+          <label class="sr-only" for="promptEditor">Prompt to lint</label>
+          <textarea id="promptEditor" class="editor" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="Paste a prompt here, or start from one of the examples."></textarea>
+          <footer class="editor-foot">
+            <span id="editorMeta" class="editor-meta">0 words · 0 characters</span>
+            <span class="kbd-hint"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> to analyze</span>
+            <button id="analyzeButton" class="primary-button" type="button">Analyze prompt</button>
+          </footer>
+        </article>
+
+        <article class="panel results-panel" aria-label="Lint report">
+          <div id="resultsEmpty" class="results-empty">
+            <span class="empty-mark" aria-hidden="true">
+              <svg viewBox="0 0 32 32" width="30" height="30"><circle cx="14" cy="14" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 20l6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </span>
+            <h2>No prompt yet</h2>
+            <p>Write or paste a prompt to see its score, missing sections, and line-level findings.</p>
+            <button id="emptySampleButton" class="ghost-button" type="button">Try the vague example</button>
+          </div>
+
+          <div id="resultsContent" hidden>
+            <header class="score-block">
+              <div class="score-ring" id="scoreRingWrapper">
+                <svg viewBox="0 0 120 120" width="120" height="120" aria-hidden="true">
+                  <circle class="ring-track" cx="60" cy="60" r="52" fill="none" stroke-width="9"/>
+                  <circle id="scoreRing" class="ring-value" cx="60" cy="60" r="52" fill="none" stroke-width="9" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                </svg>
+                <div class="score-center">
+                  <strong id="scoreValue">0</strong>
+                  <span id="scoreGrade">–</span>
+                </div>
+              </div>
+              <div class="score-copy">
+                <p class="eyebrow" id="scoreLabel">Waiting</p>
+                <p id="scoreSummary" class="score-summary" aria-live="polite">0 findings</p>
+                <div id="severityCounts" class="severity-counts"></div>
+              </div>
+              <div class="score-actions">
+                <button id="copyReport" class="subtle-button" type="button" title="Copy the plain-text report">Copy report</button>
+                <button id="downloadReport" class="subtle-button" type="button" title="Download the JSON report">JSON</button>
+              </div>
+            </header>
+
+            <div id="scoreBreakdown" class="breakdown" aria-label="Score breakdown"></div>
+
+            <div class="results-tabs" role="tablist" aria-label="Report sections">
+              <button id="rtab-findings" class="results-tab is-active" role="tab" aria-selected="true" aria-controls="panel-findings" data-panel="findings" type="button">Findings <span id="findingsCount" class="tab-count">0</span></button>
+              <button id="rtab-structure" class="results-tab" role="tab" aria-selected="false" aria-controls="panel-structure" data-panel="structure" type="button">Structure</button>
+              <button id="rtab-budget" class="results-tab" role="tab" aria-selected="false" aria-controls="panel-budget" data-panel="budget" type="button">Budget</button>
+            </div>
+
+            <div id="panel-findings" role="tabpanel" aria-labelledby="rtab-findings">
+              <div id="severityFilters" class="filter-row" role="group" aria-label="Filter findings by severity"></div>
+              <div id="findingsList" class="findings-list"></div>
+            </div>
+
+            <div id="panel-structure" role="tabpanel" aria-labelledby="rtab-structure" hidden>
+              <ul id="structureList" class="structure-list"></ul>
+              <p class="fine-print">A section earns points only when it has content under it. Labels are matched from headings, <code>Label:</code> lines, and short caps labels.</p>
+            </div>
+
+            <div id="panel-budget" role="tabpanel" aria-labelledby="rtab-budget" hidden>
+              <div id="statGrid" class="stat-grid"></div>
+              <h3 class="budget-title">Context window usage</h3>
+              <div id="contextUsage" class="context-usage"></div>
+              <p class="fine-print">Token counts are estimates from word shape, CJK characters, punctuation, and line breaks. They are for budgeting, not billing.</p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="view-compare" class="view" role="tabpanel" aria-labelledby="tab-compare" hidden>
+      <div class="compare-inputs">
+        <article class="panel editor-panel">
+          <header class="panel-head">
+            <div><h2>Before</h2><p>The prompt as it is today.</p></div>
+            <span id="beforeMeta" class="editor-meta">0 words</span>
+          </header>
+          <label class="sr-only" for="beforeEditor">Prompt before changes</label>
+          <textarea id="beforeEditor" class="editor editor-short" spellcheck="false" placeholder="Paste the earlier version."></textarea>
+        </article>
+        <article class="panel editor-panel">
+          <header class="panel-head">
+            <div><h2>After</h2><p>The revision you are considering.</p></div>
+            <span id="afterMeta" class="editor-meta">0 words</span>
+          </header>
+          <label class="sr-only" for="afterEditor">Prompt after changes</label>
+          <textarea id="afterEditor" class="editor editor-short" spellcheck="false" placeholder="Paste the revised version."></textarea>
+        </article>
+      </div>
+      <div class="compare-bar">
+        <div class="compare-bar-copy">
+          <button id="compareSample" class="subtle-button" type="button">Load example pair</button>
+          <span id="compareStale" class="stale-note" hidden>Inputs changed — compare again.</span>
+        </div>
+        <button id="compareButton" class="primary-button" type="button">Compare versions</button>
+      </div>
+
+      <div id="compareEmpty" class="results-empty compare-empty">
+        <span class="empty-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" width="30" height="30"><path d="M8 6h9l7 7v13H8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M17 6v7h7M12 18h9M12 22h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </span>
+        <h2>Compare two versions</h2>
+        <p>See the score delta, resolved and introduced findings, sections gained, and a line-by-line diff.</p>
+      </div>
+
+      <div id="compareContent" hidden>
+        <div class="delta-grid">
+          <div class="delta-card">
+            <span class="delta-label">Before</span>
+            <strong id="beforeScore">0</strong>
+            <span id="beforeGrade" class="grade-pill">–</span>
+            <span id="beforeDetail" class="delta-detail">0 findings</span>
+          </div>
+          <div class="delta-card">
+            <span class="delta-label">After</span>
+            <strong id="afterScore">0</strong>
+            <span id="afterGrade" class="grade-pill">–</span>
+            <span id="afterDetail" class="delta-detail">0 findings</span>
+          </div>
+          <div class="delta-card delta-card-wide">
+            <span class="delta-label">Delta</span>
+            <strong id="scoreDelta">±0</strong>
+            <span id="tokenDelta" class="delta-detail">tokens ±0</span>
+            <span id="diffStats" class="delta-detail">+0 / −0 lines</span>
+          </div>
+        </div>
+        <p id="compareVerdict" class="verdict" aria-live="polite"></p>
+        <div id="compareFacts" class="compare-facts"></div>
+        <section class="diff-panel" aria-label="Line diff">
+          <header class="diff-head">
+            <h3>Line diff</h3>
+            <span id="diffCount" class="editor-meta">0 lines</span>
+          </header>
+          <ol id="diffList" class="diff-list"></ol>
+        </section>
+      </div>
+    </section>
+
+    <section id="view-rules" class="view" role="tabpanel" aria-labelledby="tab-rules" hidden>
+      <div class="rules-head">
+        <div>
+          <h2>All 22 rules</h2>
+          <p>Deterministic patterns and section checks. If a rule misfires on intentional phrasing, that is useful feedback too.</p>
+        </div>
+        <div class="rules-tools">
+          <label class="sr-only" for="ruleSearch">Search rules</label>
+          <input id="ruleSearch" class="search-input" type="search" placeholder="Search rules, IDs, or wording…" autocomplete="off" />
+          <span id="rulesCount" class="editor-meta">22 rules</span>
+        </div>
+      </div>
+      <div id="rulesGrid" class="rules-grid"></div>
+    </section>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <p>
+    <strong>Runs entirely in your browser.</strong> No account, no analytics, no model calls.
+    The draft and theme stay in this browser's local storage.
+  </p>
+  <div class="footer-actions">
+    <a href="https://github.com/noxaplus-star/noxaplus-promptlens#quick-start" target="_blank" rel="noopener">CLI &amp; API docs</a>
+    <a href="https://www.noxaplus.ir" target="_blank" rel="noopener">NoxaPlus</a>
+    <button id="clearLocal" class="link-button" type="button">Clear local draft</button>
+  </div>
+</footer>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+<div id="loadFallback" class="load-fallback" role="alert" hidden>
+  <strong>PromptLens could not start.</strong>
+  The page uses JavaScript modules, which browsers block when a file is opened directly from disk.
+  Open the <a href="https://noxaplus-star.github.io/noxaplus-promptlens/">hosted playground</a>,
+  or serve this folder over HTTP (for example, <code>npx serve .</code>).
+</div>
+<noscript>
+  <div class="noscript">PromptLens needs JavaScript to run its local analysis engine.</div>
+</noscript>
+<script type="module" src="./web/app.js"></script>
+<script>
+  window.setTimeout(function () {
+    if (document.documentElement.dataset.appReady) return;
+    var box = document.getElementById("loadFallback");
+    if (box) box.hidden = false;
+  }, 4000);
+</script>
+</body>
+</html>

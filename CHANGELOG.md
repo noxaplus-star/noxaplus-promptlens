@@ -2,6 +2,25 @@
 
 All notable changes to NoxaPlus PromptLens are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-11-16
+
+### Added
+
+- A static browser playground, published at <https://noxaplus-star.github.io/noxaplus-promptlens/>, for people who want to use PromptLens without installing Node.js or starting a server.
+- Live linting with a score ring, severity counts, score breakdown, structure checklist, token budget, and copy or JSON export of the report.
+- Version comparison with score and token deltas, resolved and introduced findings, sections gained or lost, and a line-by-line diff.
+- A searchable catalog of all 22 rules inside the playground.
+- Light and dark themes, a local draft and theme in `localStorage`, and <kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Enter</kbd> to analyze.
+- `npm run build:web`, which compiles the browser-safe engine into `web/engine/` and generates `version.js` and `samples.js` from `package.json` and `examples/`.
+- Browser playground tests covering the generated version, sample parity with the example files, lint and diff results, and the static entry page.
+- A CI check that rebuilds the browser engine and fails when the committed output is stale.
+
+### Changed
+
+- The README now leads with a no-install playground link, documents the page, and separates the hosted playground from the local dashboard and HTTP API.
+
+[1.1.0]: https://github.com/noxaplus-star/noxaplus-promptlens/releases/tag/v1.1.0
+
 ## [1.0.1] - 2026-11-14
 
 ### Fixed
